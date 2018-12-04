@@ -12,7 +12,7 @@ variables:
 - group: azuresecrets
 
 steps:
-- script: docker build -f demo-core-container/linux.Dockerfile -t $(imageName) .
+- script: docker build -f linux.Dockerfile -t $(imageName) .
   displayName: 'docker build'
 - script: |
     docker login -u $(clientId) -p $(clientSecret) $(containerRegistry)

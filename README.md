@@ -27,25 +27,25 @@ az deployment create --template-file azuredeploy.json --location eastus2 \
 ## Build Images and publish to Registry
 
 ```bash
-
 REGISTRY=$(az acr list --resource-group ${NAME}-$UNIQUE --query [].name -otsv)
 
 # Login to the Container Registry
 az acr login --name $REGISTRY
 
 # Build and Push Image
-az acr run -r $REGISTRY -f sample.yaml .
+az acr run -r $REGISTRY -f build.yaml .
 ```
 
 
 ## Deploy the Container to Azure Container Instancs
 
 ```bash
-VAULT=$(az keyvault list --resource-group ${PWD##*/}-$UNIQUE  -otable --query [].name -otsv)
+VAULT=$(az keyvault list --resource-group ${NAME}-$UNIQUE  -otable --query [].name -otsv)
 
+# Deploy a Container
 az container create \
-    --resource-group ${PWD##*/}-$UNIQUE \
-    --name ${PWD##*/}-$UNIQUE \
+    --resource-group ${NAME}-$UNIQUE \
+    --name ${NAME}-$UNIQUE \
     --image $REGISTRY.azurecr.io/sample:latest \
     --registry-login-server $REGISTRY.azurecr.io \
     --registry-username $(az keyvault secret show --vault-name $VAULT --name clientId --query value -o tsv) \
