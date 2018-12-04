@@ -42,6 +42,7 @@ az acr run -r $REGISTRY -f build.yaml .
 
 ```bash
 VAULT=$(az keyvault list --resource-group ${NAME}-$UNIQUE  -otable --query [].name -otsv)
+az keyvault secret set --name containerRegistry --value $(az acr list --resource-group ${NAME}-$UNIQUE --query [].loginServer -otsv)
 
 # Deploy a Container
 az container create \

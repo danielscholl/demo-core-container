@@ -19,7 +19,8 @@
   "variables": {
     "registryName": "[concat('registry', uniqueString(resourceGroup().id))]",
     "registryId": "[resourceId('Microsoft.ContainerRegistry/registries', variables('registryName'))]",
-    "ReaderRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]"
+    "ReaderRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
+    "ContributorRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
   },
   "resources": [
     {
@@ -45,7 +46,7 @@
         "[resourceId('Microsoft.ContainerRegistry/registries', variables('registryName'))]"
       ],
       "properties": {
-        "roleDefinitionId": "[variables('ReaderRole')]",
+        "roleDefinitionId": "[variables('ContributorRole')]",
         "principalId": "[parameters('servicePrincipalId')]",
         "mode": "Incremental"
       }
