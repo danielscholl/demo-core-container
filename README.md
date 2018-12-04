@@ -17,3 +17,7 @@ Build the Image
 ```
 docker-compose -f linux-compose.yml build
 ```
+
+## Deploy the Resources
+
+az deployment create --template-file azuredeploy.json --location eastus

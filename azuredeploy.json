@@ -2,14 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "initials": {
-      "type": "string",
-      "metadata": {
-        "description": "Small unique string."
-      },
-      "minLength": 2,
-      "maxLength": 5
-    },
     "location": {
       "type": "string",
       "metadata": {
@@ -20,7 +12,7 @@
     "random": {
       "type": "int",
       "metadata": {
-        "description": "3 Digit Random Integer"
+        "description": "3 Digit Random Integer 100-999"
       },
       "minValue": 100,
       "maxValue": 999
@@ -30,7 +22,7 @@
       "metadata": {
         "description": "URL Location on where to find the templates"
       },
-      "defaultValue": "https://raw.githubusercontent.com/danielscholl/azure-ipc-arch/master/templates/"
+      "defaultValue": "https://raw.githubusercontent.com/danielscholl/demo-core-container/master/templates/"
     },
     "vnetPrefix": {
       "type": "string",
@@ -48,7 +40,7 @@
     }
   },
   "variables": {
-    "defaultGroup": "[concat(parameters('initials'), '-common')]"
+    "defaultGroup": "[concat('demo-core-container', parameters('random'))]"
   },
   "resources": [
     {
@@ -74,7 +66,7 @@
         },
         "parameters": {
           "prefix": {
-            "value": "[parameters('initials')]"
+            "value": "[parameters('random')]"
           },
           "vnetPrefix": {
             "value": "[parameters('vnetPrefix')]"
@@ -101,7 +93,7 @@
         },
         "parameters": {
           "prefix": {
-            "value": "[parameters('random')]"
+            "value": "[string(parameters('random'))]"
           }
         }
       }

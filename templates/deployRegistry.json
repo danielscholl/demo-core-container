@@ -3,12 +3,12 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "prefix": {
-      "type": "int",
+      "type": "string",
       "metadata": {
-        "description": "3 Digit Random Integer"
+        "description": "Small unique string."
       },
-      "minValue": 100,
-      "maxValue": 999
+      "minLength": 2,
+      "maxLength": 5
     },
     "acrAdminUserEnabled": {
       "type": "bool",
