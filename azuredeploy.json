@@ -56,24 +56,22 @@
       }
     }
   },
-  "variables": {
-    "defaultGroup": "[concat(parameters('group'), '-', parameters('random'))]"
-  },
+  "variables": {},
   "resources": [
     {
       "type": "Microsoft.Resources/resourceGroups",
       "apiVersion": "2018-05-01",
       "location": "[parameters('location')]",
-      "name": "[variables('defaultGroup')]",
+      "name": "[parameters('group')]",
       "properties": {}
     },
     {
       "name": "TemplateVNet",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2017-05-10",
-      "resourceGroup": "[variables('defaultGroup')]",
+      "resourceGroup": "[parameters('group')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]"
+        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('group'))]"
       ],
       "properties": {
         "mode": "Incremental",
@@ -88,9 +86,9 @@
       "name": "TemplateKeyVault",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2017-05-10",
-      "resourceGroup": "[variables('defaultGroup')]",
+      "resourceGroup": "[parameters('group')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]",
+        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('group'))]",
         "TemplateVNet"
       ],
       "properties": {
@@ -119,9 +117,9 @@
       "name": "TemplateRegistry",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2017-05-10",
-      "resourceGroup": "[variables('defaultGroup')]",
+      "resourceGroup": "[parameters('group')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]",
+        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('group'))]",
         "TemplateKeyVault"
       ],
       "properties": {

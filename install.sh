@@ -4,8 +4,6 @@
 #  Usage:
 #    install.sh
 
-
-
 ###############################
 ## ARGUMENT INPUT            ##
 ###############################
@@ -101,7 +99,7 @@ if [ -f ./params.json ]; then PARAMS="params.json"; else PARAMS="azuredeploy.par
 az deployment create --template-file azuredeploy.json  \
   --location $AZURE_LOCATION \
   --parameters $PARAMS \
-  --parameters random=$UNIQUE --parameters group=$BASE \
+  --parameters random=$UNIQUE --parameters group="$BASE-$RANDOM" \
   --parameters servicePrincipalClientId=$CLIENT_ID \
   --parameters servicePrincipalClientKey=$CLIENT_SECRET \
   --parameters servicePrincipalObjectId=$OBJECT_ID \
