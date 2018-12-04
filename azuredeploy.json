@@ -81,11 +81,7 @@
           "uri": "[concat(parameters('templateURL'), 'deployVNet.json')]",
           "contentVersion": "1.0.0.0"
         },
-        "parameters": {
-          "prefix": {
-            "value": "[variables('defaultGroup')]"
-          }
-        }
+        "parameters": {}
       }
     },
     {
@@ -104,9 +100,6 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "prefix": {
-            "value": "[string(parameters('random'))]"
-          },
           "servicePrincipalClientId": {
             "value": "[parameters('servicePrincipalClientId')]"
           },
