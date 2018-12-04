@@ -99,11 +99,27 @@ if [ -f ./params.json ]; then PARAMS="params.json"; else PARAMS="azuredeploy.par
 az deployment create --template-file azuredeploy.json  \
   --location $AZURE_LOCATION \
   --parameters $PARAMS \
-  --parameters random=$UNIQUE --parameters group="$BASE-$RANDOM" \
+  --parameters random=$UNIQUE --parameters group="$BASE-$UNIQUE" \
   --parameters servicePrincipalClientId=$CLIENT_ID \
   --parameters servicePrincipalClientKey=$CLIENT_SECRET \
   --parameters servicePrincipalObjectId=$OBJECT_ID \
   --parameters userObjectId=$USER_ID
 
-REGISTRY=$(az acr list --resource-group $BASE-$RANDOM --query [].name -otsv)
+VAULT=$(az keyvault list --resource-group $BASE-$UNIQUE  -otable --query [].name -otsv)
+REGISTRY=$(az acr list --resource-group $BASE-$UNIQUE --query [].name -otsv)
+
+tput setaf 2; echo 'Building Docker Images...' ; tput sgr0
 az acr login --name $REGISTRY
+az acr run -r $REGISTRY -f build.yaml .
+
+tput setaf 2; echo 'Deploying Container Instance...' ; tput sgr0
+az container create \
+    --resource-group $BASE-$UNIQUE \
+    --name $BASE-$UNIQUE \
+    --image $REGISTRY.azurecr.io/demo-core-container:latest \
+    --registry-login-server $REGISTRY.azurecr.io \
+    --registry-username $(az keyvault secret show --vault-name $VAULT --name clientId --query value -o tsv) \
+    --registry-password $(az keyvault secret show --vault-name $VAULT --name clientSecret --query value -o tsv) \
+    --dns-name-label $BASE-$UNIQUE \
+    --query "{FQDN:ipAddress.fqdn}" \
+    --output table
