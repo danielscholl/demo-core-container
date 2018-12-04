@@ -2,6 +2,8 @@
 
 A Sample ASP.NET Core App with build and deploy pipelines.
 
+[![Build Status](https://cloudcodeit.visualstudio.com/DemoStuff/_apis/build/status/danielscholl.demo-core-container)](https://cloudcodeit.visualstudio.com/DemoStuff/_build/latest?definitionId=29)
+
 ## Deploy the Resources
 
 ```bash
@@ -36,7 +38,6 @@ az acr login --name $REGISTRY
 az acr run -r $REGISTRY -f build.yaml .
 ```
 
-
 ## Deploy the Container to Azure Container Instancs
 
 ```bash
@@ -50,7 +51,7 @@ az container create \
     --registry-login-server $REGISTRY.azurecr.io \
     --registry-username $(az keyvault secret show --vault-name $VAULT --name clientId --query value -o tsv) \
     --registry-password $(az keyvault secret show --vault-name $VAULT --name clientSecret --query value -o tsv) \
-    --dns-name-label ${PWD##*/}$UNIQUE \
+    --dns-name-label ${NAME}$UNIQUE \
     --query "{FQDN:ipAddress.fqdn}" \
     --output table
 ```
