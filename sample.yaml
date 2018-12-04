@@ -1,0 +1,9 @@
+version: 1.0-preview-1
+steps:
+  # build windows and linux images, concurrently
+  - id: build-sample-linux
+    build: -t {{.Run.Registry}}/sample:{{.Run.ID}} -t {{.Run.Registry}}/sample:linux -f linux.Dockerfile .
+    when: ["-"]
+  - id: build-sample-windows
+    build: -t {{.Run.Registry}}/sample:{{.Run.ID}} -t {{.Run.Registry}}/sample:windows -f windows.Dockerfile .
+    when: ["-"]
