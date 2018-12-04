@@ -60,13 +60,13 @@ az acr run -r $REGISTRY -f build.yaml .
 VAULT=$(az keyvault list --resource-group $NAME-$UNIQUE -otable --query [].name -otsv)
 
 az container create \
-    --resource-group $REGISTRY \
-    --name $NAME \
+    --resource-group $NAME-$UNIQUE \
+    --name $NAME-$UNIQUE \
     --image $REGISTRY.azurecr.io/$IMAGE:latest \
     --registry-login-server $REGISTRY.azurecr.io \
-    --registry-username $(az keyvault secret show --vault-name $VAULT --name $ACR_NAME-pull-usr --query value -o tsv) \
-    --registry-password $(az keyvault secret show --vault-name $VAULT --name $ACR_NAME-pull-pwd --query value -o tsv) \
-    --dns-name-label acr-tasks-$ACR_NAME \
+    --registry-username $(az keyvault secret show --vault-name $VAULT --name clientId --query value -o tsv) \
+    --registry-password $(az keyvault secret show --vault-name $VAULT --name clientSecret --query value -o tsv) \
+    --dns-name-label $NAME-$UNIQUE \
     --query "{FQDN:ipAddress.fqdn}" \
     --output table
 

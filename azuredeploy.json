@@ -83,7 +83,7 @@
         },
         "parameters": {
           "prefix": {
-            "value": "[string(parameters('random'))]"
+            "value": "[variables('defaultGroup')]"
           }
         }
       }
@@ -138,9 +138,6 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "prefix": {
-            "value": "[string(parameters('random'))]"
-          },
           "servicePrincipalId": {
             "value": "[parameters('servicePrincipalObjectId')]"
           }
