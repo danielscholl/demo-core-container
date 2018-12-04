@@ -30,6 +30,24 @@
         "description": "URL Location on where to find the templates"
       },
       "defaultValue": "https://raw.githubusercontent.com/danielscholl/demo-core-container/master/templates/"
+    },
+    "servicePrincipalClientId": {
+      "type": "string",
+      "metadata": {
+        "description": "Application Client Id."
+      }
+    },
+    "servicePrincipalClientKey": {
+      "type": "string",
+      "metadata": {
+        "description": "Application Client Key."
+      }
+    },
+    "servicePrincipalObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "ObjectId of Service Principal."
+      }
     }
   },
   "variables": {
@@ -44,27 +62,6 @@
       "properties": {}
     },
     {
-      "name": "TemplateRegistry",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
-      "resourceGroup": "[variables('defaultGroup')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(parameters('templateURL'), 'deployRegistry.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "prefix": {
-            "value": "[string(parameters('random'))]"
-          }
-        }
-      }
-    },
-    {
       "name": "TemplateVNet",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2017-05-10",
@@ -76,6 +73,59 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[concat(parameters('templateURL'), 'deployVNet.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "prefix": {
+            "value": "[string(parameters('random'))]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateKeyVault",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[variables('defaultGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]",
+        "TemplateVNet"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateURL'), 'deployPrivateKeyVault.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "prefix": {
+            "value": "[string(parameters('random'))]"
+          },
+          "servicePrincipalClientId": {
+            "value": "[parameters('servicePrincipalClientId')]"
+          },
+          "servicePrincipalClientKey": {
+            "value": "[parameters('servicePrincipalClientKey')]"
+          },
+          "servicePrincipalObjectId": {
+            "value": "[parameters('servicePrincipalObjectId')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateRegistry",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[variables('defaultGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]",
+        "TemplateKeyVault"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateURL'), 'deployRegistry.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {

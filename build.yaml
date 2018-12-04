@@ -1,0 +1,6 @@
+version: 1.0-preview-1
+steps:
+  - build: -t {{.Run.Registry}}/demo-core-container:{{.Run.ID}} -t {{.Run.Registry}}/demo-core-container:latest -f linux.Dockerfile .
+  - push:
+    - {{.Run.Registry}}/demo-core-container:{{.Run.ID}}
+    - {{.Run.Registry}}/demo-core-container:latest
