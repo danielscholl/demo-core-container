@@ -30,7 +30,7 @@
     }
   },
   "variables": {
-    "KeyVaultName": "[concat(parameters('prefix'), uniqueString(resourceGroup().id))]",
+    "KeyVaultName": "[concat('kv', parameters('prefix'), uniqueString(resourceGroup().id))]",
     "KeyVaultId": "[resourceId('Microsoft.KeyVault/vaults', variables('KeyVaultName'))]"
   },
   "resources": [
