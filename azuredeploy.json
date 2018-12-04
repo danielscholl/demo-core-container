@@ -9,6 +9,13 @@
       },
       "defaultValue": "eastus"
     },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Solution Name"
+      },
+      "defaultValue": "demo-core-container"
+    },
     "random": {
       "type": "int",
       "metadata": {
@@ -40,7 +47,7 @@
     }
   },
   "variables": {
-    "defaultGroup": "[concat('demo-core-container', parameters('random'))]"
+    "defaultGroup": "[concat(parameters('name'), '-', parameters('random'))]"
   },
   "resources": [
     {
@@ -49,33 +56,6 @@
       "location": "[parameters('location')]",
       "name": "[variables('defaultGroup')]",
       "properties": {}
-    },
-    {
-      "name": "TemplateVNet",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
-      "resourceGroup": "[variables('defaultGroup')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(parameters('templateURL'), 'deployVNet.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "prefix": {
-            "value": "[parameters('random')]"
-          },
-          "vnetPrefix": {
-            "value": "[parameters('vnetPrefix')]"
-          },
-          "subnet1Prefix": {
-            "value": "[parameters('containerCIDR')]"
-          }
-        }
-      }
     },
     {
       "name": "TemplateRegistry",
@@ -94,6 +74,33 @@
         "parameters": {
           "prefix": {
             "value": "[string(parameters('random'))]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateVNet",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[variables('defaultGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateURL'), 'deployVNet.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "prefix": {
+            "value": "[string(parameters('random'))]"
+          },
+          "vnetPrefix": {
+            "value": "[parameters('vnetPrefix')]"
+          },
+          "subnet1Prefix": {
+            "value": "[parameters('containerCIDR')]"
           }
         }
       }

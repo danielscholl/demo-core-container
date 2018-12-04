@@ -15,29 +15,29 @@
       "metadata": {
         "description": "Virtual Network Address Prefix CIDR"
       },
-      "defaultValue": "10.0.0.0/16"
+      "defaultValue": "10.2.0.0/24"
     },
     "subnet1Prefix": {
       "type": "string",
       "metadata": {
         "description": "Subnet 1 Address Prefix CIDR"
       },
-      "defaultValue": "10.0.0.0/24"
+      "defaultValue": "10.2.0.0/26"
     },
     "subnet2Prefix": {
       "type": "string",
       "metadata": {
         "description": "Subnet 2 Address Prefix CIDR"
       },
-      "defaultValue": "10.0.1.0/24"
+      "defaultValue": "10.2.0.64/26"
     }
   },
   "variables": {
-    "VNetName": "[concat(parameters('prefix'), '-vnet')]",
+    "VNetName": "[concat(resourceGroup().name, '-vnet')]",
     "VNetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('VNetName'))]",
-    "Subnet1Name": "aciSubnet",
+    "Subnet1Name": "defaultSubnet",
     "SubNet1Id": "[concat(variables('VNetId'), '/subnets/', variables('Subnet1Name'))]",
-    "Subnet2Name": "defaultSubnet",
+    "Subnet2Name": "containerSubnet",
     "SubNet2Id": "[concat(variables('VNetId'), '/subnets/', variables('Subnet2Name'))]"
   },
   "resources": [
