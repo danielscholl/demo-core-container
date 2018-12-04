@@ -9,7 +9,7 @@
       },
       "defaultValue": "eastus"
     },
-    "name": {
+    "group": {
       "type": "string",
       "metadata": {
         "description": "Solution Name"
@@ -57,7 +57,7 @@
     }
   },
   "variables": {
-    "defaultGroup": "[concat(parameters('name'), '-', parameters('random'))]"
+    "defaultGroup": "[concat(parameters('group'), '-', parameters('random'))]"
   },
   "resources": [
     {

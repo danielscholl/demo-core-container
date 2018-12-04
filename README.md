@@ -2,22 +2,6 @@
 
 A Sample ASP.NET Core App with build and deploy pipelines.
 
-## Windows Container Usage
-
-Build the Image
-
-```
-docker-compose -f windows-compose.yml build
-```
-
-## Linux Container Usage
-
-Build the Image
-
-```
-docker-compose -f linux-compose.yml build
-```
-
 ## Deploy the Resources
 
 ```bash
@@ -26,7 +10,7 @@ UNIQUE=123
 PRINCIPAL="http://${NAME}-${UNIQUE}"
 
 # Create a Service Principal for Registry
-CLIENT_SECRET=$(az ad sp create-for-rbac --name $PRINCPAL --skip-assignment --query password -otsv)
+CLIENT_SECRET=$(az ad sp create-for-rbac --name $PRINCIPAL --skip-assignment --query password -otsv)
 CLIENT_ID=$(az ad sp list --display-name $PRINCIPAL --query [].appId -otsv)
 OBJECT_ID=$(az ad sp list --display-name $PRINCIPAL --query [].objectId -otsv)
 USER_ID=$(az ad user show --upn-or-object-id $(az account show --query user.name -otsv) --query objectId -otsv)

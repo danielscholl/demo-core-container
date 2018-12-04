@@ -32,7 +32,7 @@
     }
   },
   "variables": {
-    "VNetName": "[concat(parameters('prefix'), '-vnet')]",
+    "VNetName": "[concat('vnet', parameters('prefix'), uniqueString(resourceGroup().id))]",
     "VNetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('VNetName'))]",
     "Subnet1Name": "defaultSubnet",
     "SubNet1Id": "[concat(variables('VNetId'), '/subnets/', variables('Subnet1Name'))]",
