@@ -2,7 +2,7 @@
 
 A Sample ASP.NET Core App with build and deploy pipelines.
 
-[![Build Status](https://cloudcodeit.visualstudio.com/DemoStuff/_apis/build/status/danielscholl.demo-core-container)](https://cloudcodeit.visualstudio.com/DemoStuff/_build/latest?definitionId=29)
+[![Build Status](https://cloudcodeit.visualstudio.com/DemoStuff/_apis/build/status/danielscholl.demo-core-container)](https://cloudcodeit.visualstudio.com/DemoStuff/_build/latest?definitionId=30)
 
 ## Deploy the Resources
 

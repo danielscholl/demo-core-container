@@ -108,7 +108,7 @@ VAULT=$(az keyvault list --resource-group $BASE-$UNIQUE  -otable --query [].name
 REGISTRY=$(az acr list --resource-group $BASE-$UNIQUE --query [].name -otsv)
 
 tput setaf 2; echo 'Adding Registry to Vault...' ; tput sgr0
-az keyvault secret set --name containerRegistry --value $(az acr list --resource-group $BASE-$UNIQUE --query [].loginServer -otsv)
+az keyvault secret set --vault-name $VAULT --name containerRegistry --value $(az acr list --resource-group $BASE-$UNIQUE --query [].loginServer -otsv)
 
 tput setaf 2; echo 'Building Docker Images...' ; tput sgr0
 az acr login --name $REGISTRY
