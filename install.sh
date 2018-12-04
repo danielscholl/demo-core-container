@@ -39,8 +39,7 @@ function CreateServicePrincipal() {
         exit 1;
     fi
 
-    local _result=$(az ad sp list --display-name $1 --query [].appId -otsv)
-    if [ $_result == "" ]; then
+    if [[ $(az ad sp list --display-name $1 --query [].appId -otsv) == "" ]]; then
       CLIENT_SECRET=$(az ad sp create-for-rbac \
         --name "http://$1" \
         --skip-assignment \
@@ -107,6 +106,9 @@ az deployment create --template-file azuredeploy.json  \
 
 VAULT=$(az keyvault list --resource-group $BASE-$UNIQUE  -otable --query [].name -otsv)
 REGISTRY=$(az acr list --resource-group $BASE-$UNIQUE --query [].name -otsv)
+
+tput setaf 2; echo 'Adding Registry to Vault...' ; tput sgr0
+az keyvault secret set --name containerRegistry --value $(az acr list --resource-group $BASE-$UNIQUE --query [].loginServer -otsv)
 
 tput setaf 2; echo 'Building Docker Images...' ; tput sgr0
 az acr login --name $REGISTRY
