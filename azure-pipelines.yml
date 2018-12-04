@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 pool:
-  vmImage: 'Ubuntu 16.04'
+  vmImage: 'vs2017-win2016'
 
 variables:
 - name: imageName
@@ -12,7 +12,7 @@ variables:
 - group: azuresecrets
 
 steps:
-- script: docker build -f linux.Dockerfile -t $(imageName) .
+- script: docker build -f windows.Dockerfile -t $(imageName) .
   displayName: 'docker build'
 - script: |
     docker login -u $(clientId) -p $(clientSecret) $(containerRegistry)
