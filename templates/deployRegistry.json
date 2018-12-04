@@ -19,7 +19,7 @@
     }
   },
   "variables": {
-    "registryName": "[concat('registry', parameters('prefix'))]",
+    "registryName": "[concat(parameters('prefix'), 'registry')]",
     "registryId": "[resourceId('Microsoft.ContainerRegistry/registries', variables('registryName'))]"
   },
   "resources": [
