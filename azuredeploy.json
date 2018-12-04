@@ -48,6 +48,12 @@
       "metadata": {
         "description": "ObjectId of Service Principal."
       }
+    },
+    "userObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "ObjectId of current logged in user."
+      }
     }
   },
   "variables": {
@@ -109,6 +115,9 @@
           },
           "servicePrincipalObjectId": {
             "value": "[parameters('servicePrincipalObjectId')]"
+          },
+          "userObjectId": {
+            "value": "[parameters('userObjectId')]"
           }
         }
       }
@@ -131,6 +140,9 @@
         "parameters": {
           "prefix": {
             "value": "[string(parameters('random'))]"
+          },
+          "servicePrincipalId": {
+            "value": "[parameters('servicePrincipalObjectId')]"
           }
         }
       }

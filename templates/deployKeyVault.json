@@ -27,6 +27,12 @@
       "metadata": {
         "description": "Service Principal ObjectId that. It is used by Registry to dynamically manage resources."
       }
+    },
+    "userObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "User ObjectId that. It is used by Registry to dynamically manage resources."
+      }
     }
   },
   "variables": {
@@ -50,6 +56,18 @@
           {
             "tenantId": "[subscription().tenantId]",
             "objectId": "[parameters('servicePrincipalClientId')]",
+            "permissions": {
+              "keys": [
+                "all"
+              ],
+              "secrets": [
+                "all"
+              ]
+            }
+          },
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[parameters('userObjectId')]",
             "permissions": {
               "keys": [
                 "all"
