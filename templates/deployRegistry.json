@@ -10,6 +10,12 @@
       "minLength": 2,
       "maxLength": 5
     },
+    "servicePrincipalId": {
+      "metadata": {
+        "description": "The Service Principal Object ID"
+      },
+      "type": "securestring"
+    },
     "acrAdminUserEnabled": {
       "type": "bool",
       "defaultValue": true,
@@ -20,7 +26,8 @@
   },
   "variables": {
     "registryName": "[concat(parameters('prefix'), 'registry')]",
-    "registryId": "[resourceId('Microsoft.ContainerRegistry/registries', variables('registryName'))]"
+    "registryId": "[resourceId('Microsoft.ContainerRegistry/registries', variables('registryName'))]",
+    "ReaderRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]"
   },
   "resources": [
     {
@@ -36,6 +43,19 @@
       },
       "properties": {
         "adminUserEnabled": "[parameters('acrAdminUserEnabled')]"
+      }
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries/providers/roleAssignments",
+      "apiVersion": "2017-05-01",
+      "name": "[concat(variables('registryName'), '/Microsoft.Authorization/', guid(concat(resourceGroup().id), variables('ReaderRole')))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', variables('registryName'))]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[variables('ReaderRole')]",
+        "principalId": "[parameters('servicePrincipalId')]",
+        "mode": "Incremental"
       }
     }
   ],

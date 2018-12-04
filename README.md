@@ -25,11 +25,13 @@ NAME="demo-core-container"
 UNIQUE=123
 PRINCIPAL="http://${NAME}-${UNIQUE}"
 
+# Service Principal Must exist
 CLIENT_SECRET=$(az ad sp create-for-rbac --name $PRINCPAL --skip-assignment --query password -otsv)
 CLIENT_ID=$(az ad sp list --display-name $PRINCIPAL --query [].appId -otsv)
 OBJECT_ID=$(az ad sp list --display-name $PRINCIPAL --query [].objectId -otsv)
 
-az deployment create --template-file azuredeploy.json --location eastus --random $UNIQUE \
+az deployment create --template-file azuredeploy.json --location eastus2 \
+  --parameters random=$UNIQUE \
   --parameters servicePrincipalClientId=$CLIENT_ID \
   --parameters servicePrincipalClientKey=$CLIENT_SECRET \
   --parameters servicePrincipalObjectId=$OBJECT_ID
