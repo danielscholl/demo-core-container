@@ -77,7 +77,7 @@ docker build -t $server/demo-core-container:latest -f windows.Dockerfile .
 docker push $server/demo-core-container:latest
 ```
 
-## Deploy the Container to Azure Container Instancs
+## Deploy the Container to Azure Container Instances
 
 ```bash
 # Deploy a Container
