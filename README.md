@@ -6,6 +6,7 @@ A Sample ASP.NET Core App with build and deploy pipelines.
 
 ## Deploy the Resources
 
+_Bash with Azure CLI_
 ```bash
 UNIQUE=123
 NAME="demo-core-container"
@@ -26,10 +27,33 @@ az deployment create --template-file azuredeploy.json --location eastus2 \
   --parameters userObjectId=$USER_ID
 ```
 
+_PowerShell with AZ Module_
+```powershell
+$UNIQUE = 321
+$NAME = "demo-core-container"
+$PASSWORD = [guid]::NewGuid().Guid
+$SECPASS = ConvertTo-SecureString $PASSWORD -AsPlainText -Force
+$PRINCIPAL = New-AzADServicePrincipal -DisplayName "${NAME}-${UNIQUE}" -Password $SECPASS
+$USER = Get-AzADUser -UPN $(Get-AzContext).Account
+
+New-AzDeployment -Name $NAME `
+  -TemplateFile azuredeploy.json -location eastus2 `
+  -random $UNIQUE -group "${NAME}-$UNIQUE"`
+  -servicePrincipalClientId $PRINCIPAL.ApplicationId `
+  -servicePrincipalClientKey $PASSWORD `
+  -servicePrincipalObjectId $PRINCIPAL.Id  `
+  -userObjectId $USER.Id
+```
+
 ## Build Images and publish to Registry
 
+_Bash with Azure CLI_
 ```bash
 REGISTRY=$(az acr list --resource-group ${NAME}-$UNIQUE --query [].name -otsv)
+VAULT=$(az keyvault list --resource-group ${NAME}-$UNIQUE  -otable --query [].name -otsv)
+
+# Save Registry Info to Key Vault
+az keyvault secret set --name containerRegistry --value $(az acr list --resource-group ${NAME}-$UNIQUE --query [].loginServer -otsv)
 
 # Login to the Container Registry
 az acr login --name $REGISTRY
@@ -38,12 +62,24 @@ az acr login --name $REGISTRY
 az acr run -r $REGISTRY -f build.yaml .
 ```
 
+_PowerShell with AZ Module_
+```powershell
+$REGISTRY = Get-AzContainerRegistry -ResourceGroup $NAME-$UNIQUE
+$VAULT = Get-AzKeyVault -ResourceGroupName $NAME-$UNIQUE
+$SECRETVALUE = ConvertTo-SecureString $REGISTRY.LoginServer -AsPlainText -Force
+Set-AzKeyVaultSecret -VaultName $VAULT.VaultName -Name 'containerRegistry' -SecretValue $SECRETVALUE
+
+$creds = Get-AzContainerRegistryCredential -Registry $REGISTRY
+$server = $REGISTRY.LoginServer
+
+$creds.Password | docker login $server -u $creds.Username --password-stdin
+docker build -t $server/demo-core-container:latest -f windows.Dockerfile .
+docker push $server/demo-core-container:latest
+```
+
 ## Deploy the Container to Azure Container Instancs
 
 ```bash
-VAULT=$(az keyvault list --resource-group ${NAME}-$UNIQUE  -otable --query [].name -otsv)
-az keyvault secret set --name containerRegistry --value $(az acr list --resource-group ${NAME}-$UNIQUE --query [].loginServer -otsv)
-
 # Deploy a Container
 az container create \
     --resource-group ${NAME}-$UNIQUE \
