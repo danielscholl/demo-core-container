@@ -14,13 +14,13 @@ PRINCIPAL="http://${NAME}-${UNIQUE}"
 
 # Create a Service Principal for Registry
 CLIENT_SECRET=$(az ad sp create-for-rbac --name $PRINCIPAL --skip-assignment --query password -otsv)
-CLIENT_ID=$(az ad sp list --display-name $NAME --query [].appId -otsv)
-OBJECT_ID=$(az ad sp list --display-name $NAME --query [].objectId -otsv)
+CLIENT_ID=$(az ad sp list --display-name $NAME-$UNIQUE --query [].appId -otsv)
+OBJECT_ID=$(az ad sp list --display-name $NAME-$UNIQUE --query [].objectId -otsv)
 USER_ID=$(az ad user show --upn-or-object-id $(az account show --query user.name -otsv) --query objectId -otsv)
 
 # Create Azure Resources  (KV, VNET, REGISTRY)
 az deployment create --template-file azuredeploy.json --location eastus2 \
-  --parameters random=$UNIQUE --parameters group="${NAME}-$UNIQUE" \
+  --parameters random=$UNIQUE --parameters group="$NAME-$UNIQUE" \
   --parameters servicePrincipalClientId=$CLIENT_ID \
   --parameters servicePrincipalClientKey=$CLIENT_SECRET \
   --parameters servicePrincipalObjectId=$OBJECT_ID \
@@ -49,17 +49,17 @@ New-AzDeployment -Name $NAME `
 
 _Bash with Azure CLI_
 ```bash
-REGISTRY=$(az acr list --resource-group ${NAME}-$UNIQUE --query [].name -otsv)
-VAULT=$(az keyvault list --resource-group ${NAME}-$UNIQUE  -otable --query [].name -otsv)
+REGISTRY=$(az acr list --resource-group $NAME-$UNIQUE --query [].name -otsv)
+VAULT=$(az keyvault list --resource-group $NAME-$UNIQUE  -otable --query [].name -otsv)
 
 # Save Registry Info to Key Vault
-az keyvault secret set --name containerRegistry --value $(az acr list --resource-group ${NAME}-$UNIQUE --query [].loginServer -otsv)
+az keyvault secret set --vault-name $VAULT --name containerRegistry --value $(az acr list --resource-group ${NAME}-$UNIQUE --query [].loginServer -otsv)
 
 # Login to the Container Registry
 az acr login --name $REGISTRY
 
 # Build and Push Image
-az acr run -r $REGISTRY -f build.yaml .
+az acr run -r $REGISTRY -f linux-build.yaml .
 ```
 
 _PowerShell with AZ Module_
@@ -80,15 +80,41 @@ docker push $server/demo-core-container:latest
 ## Deploy the Container to Azure Container Instances
 
 ```bash
-# Deploy a Container
+VNET=$(az network vnet list --resource-group $NAME-$UNIQUE --query [].name -otsv)
+
+# Deploy a Container on Public Network
 az container create \
-    --resource-group ${NAME}-$UNIQUE \
-    --name ${NAME}-$UNIQUE \
-    --image $REGISTRY.azurecr.io/sample:latest \
+    --resource-group $NAME-$UNIQUE \
+    --name $NAME-$UNIQUE-public \
+    --image $REGISTRY.azurecr.io/demo-core-container:latest \
     --registry-login-server $REGISTRY.azurecr.io \
     --registry-username $(az keyvault secret show --vault-name $VAULT --name clientId --query value -o tsv) \
     --registry-password $(az keyvault secret show --vault-name $VAULT --name clientSecret --query value -o tsv) \
-    --dns-name-label ${NAME}$UNIQUE \
+    --dns-name-label $NAME$UNIQUE \
+    --query "{FQDN:ipAddress.fqdn}" \
+    --output table
+
+# Deploy a Container on Private Network
+az container create \
+    --resource-group $NAME-$UNIQUE \
+    --name $NAME-$UNIQUE-private \
+    --image $REGISTRY.azurecr.io/demo-core-container:latest \
+    --registry-login-server $REGISTRY.azurecr.io \
+    --registry-username $(az keyvault secret show --vault-name $VAULT --name clientId --query value -o tsv) \
+    --registry-password $(az keyvault secret show --vault-name $VAULT --name clientSecret --query value -o tsv) \
+    --vnet $VNET \
+    --subnet containerSubnet \
     --query "{FQDN:ipAddress.fqdn}" \
     --output table
 ```
+
+_PowerShell with AZ Module_
+> TODO
+
+-------------
+
+## Issue List
+
+1. ACR does not currently build Windows Containers
+
+1. ACI Windows Containers does not currently support VNET Integration
